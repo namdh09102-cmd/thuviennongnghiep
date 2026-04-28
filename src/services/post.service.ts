@@ -71,9 +71,20 @@ export const getPosts = async (query: GetPostsQuery) => {
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      excerpt: true,
+      thumbnailUrl: true,
+      tags: true,
+      status: true,
+      viewCount: true,
+      likeCount: true,
+      commentCount: true,
+      createdAt: true,
       author: { select: { id: true, username: true, role: true, isVerifiedExpert: true } },
-      category: true
+      category: { select: { id: true, name: true, slug: true } }
     },
     orderBy: { id: 'desc' }
   });
@@ -100,9 +111,20 @@ export const getTrendingPosts = async () => {
     where: { status: 'PUBLISHED' },
     orderBy: { viewCount: 'desc' },
     take: 5,
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      excerpt: true,
+      thumbnailUrl: true,
+      tags: true,
+      status: true,
+      viewCount: true,
+      likeCount: true,
+      commentCount: true,
+      createdAt: true,
       author: { select: { id: true, username: true, role: true } },
-      category: true
+      category: { select: { id: true, name: true, slug: true } }
     }
   });
 
@@ -128,7 +150,8 @@ export const getPostBySlug = async (slug: string) => {
   }
 
   const post = await prisma.post.findUnique({
-    where: { slug }
+    where: { slug },
+    select: { id: true }
   });
 
   if (!post) {
@@ -138,9 +161,21 @@ export const getPostBySlug = async (slug: string) => {
   const updatedPost = await prisma.post.update({
     where: { slug },
     data: { viewCount: { increment: 1 } },
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      content: true,
+      excerpt: true,
+      thumbnailUrl: true,
+      tags: true,
+      status: true,
+      viewCount: true,
+      likeCount: true,
+      commentCount: true,
+      createdAt: true,
       author: { select: { id: true, username: true, role: true, isVerifiedExpert: true } },
-      category: true
+      category: { select: { id: true, name: true, slug: true } }
     }
   });
 
@@ -220,9 +255,20 @@ export const searchPosts = async (queryStr: string) => {
         { content: { contains: queryStr, mode: 'insensitive' } }
       ]
     },
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      excerpt: true,
+      thumbnailUrl: true,
+      tags: true,
+      status: true,
+      viewCount: true,
+      likeCount: true,
+      commentCount: true,
+      createdAt: true,
       author: { select: { id: true, username: true, role: true } },
-      category: true
+      category: { select: { id: true, name: true, slug: true } }
     },
     orderBy: { createdAt: 'desc' }
   });

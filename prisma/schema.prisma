@@ -10,6 +10,8 @@ datasource db {
   provider = "postgresql"
 }
 
+
+
 enum Role {
   FARMER
   EXPERT
@@ -62,6 +64,9 @@ model Post {
 
   @@index([authorId])
   @@index([categoryId])
+  @@index([categoryId, createdAt, status])
+  @@index([createdAt])
+  @@index([status])
 }
 
 model Comment {
@@ -81,6 +86,8 @@ model Comment {
   @@index([postId])
   @@index([authorId])
   @@index([parentId])
+  @@index([postId, createdAt])
+  @@index([createdAt])
 }
 
 model Category {
