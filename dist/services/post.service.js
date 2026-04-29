@@ -54,9 +54,20 @@ const getPosts = async (query) => {
         take: limit,
         skip: cursor ? 1 : 0,
         cursor: cursor ? { id: cursor } : undefined,
-        include: {
+        select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            thumbnailUrl: true,
+            tags: true,
+            status: true,
+            viewCount: true,
+            likeCount: true,
+            commentCount: true,
+            createdAt: true,
             author: { select: { id: true, username: true, role: true, isVerifiedExpert: true } },
-            category: true
+            category: { select: { id: true, name: true, slug: true } }
         },
         orderBy: { id: 'desc' }
     });
@@ -81,9 +92,20 @@ const getTrendingPosts = async () => {
         where: { status: 'PUBLISHED' },
         orderBy: { viewCount: 'desc' },
         take: 5,
-        include: {
+        select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            thumbnailUrl: true,
+            tags: true,
+            status: true,
+            viewCount: true,
+            likeCount: true,
+            commentCount: true,
+            createdAt: true,
             author: { select: { id: true, username: true, role: true } },
-            category: true
+            category: { select: { id: true, name: true, slug: true } }
         }
     });
     try {
@@ -107,7 +129,8 @@ const getPostBySlug = async (slug) => {
         console.error('Redis cache read error for post detail:', error);
     }
     const post = await prisma_1.default.post.findUnique({
-        where: { slug }
+        where: { slug },
+        select: { id: true }
     });
     if (!post) {
         throw new Error('Post not found');
@@ -115,9 +138,21 @@ const getPostBySlug = async (slug) => {
     const updatedPost = await prisma_1.default.post.update({
         where: { slug },
         data: { viewCount: { increment: 1 } },
-        include: {
+        select: {
+            id: true,
+            slug: true,
+            title: true,
+            content: true,
+            excerpt: true,
+            thumbnailUrl: true,
+            tags: true,
+            status: true,
+            viewCount: true,
+            likeCount: true,
+            commentCount: true,
+            createdAt: true,
             author: { select: { id: true, username: true, role: true, isVerifiedExpert: true } },
-            category: true
+            category: { select: { id: true, name: true, slug: true } }
         }
     });
     try {
@@ -183,9 +218,20 @@ const searchPosts = async (queryStr) => {
                 { content: { contains: queryStr, mode: 'insensitive' } }
             ]
         },
-        include: {
+        select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            thumbnailUrl: true,
+            tags: true,
+            status: true,
+            viewCount: true,
+            likeCount: true,
+            commentCount: true,
+            createdAt: true,
             author: { select: { id: true, username: true, role: true } },
-            category: true
+            category: { select: { id: true, name: true, slug: true } }
         },
         orderBy: { createdAt: 'desc' }
     });

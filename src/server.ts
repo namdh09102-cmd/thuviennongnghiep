@@ -11,6 +11,8 @@ import authRoutes from './routes/auth.routes';
 import mediaRoutes from './routes/media.routes';
 import userRoutes from './routes/user.routes';
 import categoryRoutes from './routes/category.routes';
+import questionRoutes from './routes/question.routes';
+import notificationRoutes from './routes/notification.routes';
 import { logRequest } from './middleware/log.middleware';
 
 dotenv.config();
@@ -52,6 +54,8 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/media', mediaRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/questions', questionRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // Health check route
 app.get('/api/health', async (req: Request, res: Response) => {
@@ -60,7 +64,8 @@ app.get('/api/health', async (req: Request, res: Response) => {
 
   try {
     await prisma.$queryRaw`SELECT 1`;
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Database health check failed:', error);
     dbStatus = 'ERROR';
   }
 

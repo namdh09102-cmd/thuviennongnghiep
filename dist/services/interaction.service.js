@@ -43,6 +43,10 @@ const createComment = async (data) => {
         prisma_1.default.post.update({
             where: { id: data.postId },
             data: { commentCount: { increment: 1 } }
+        }),
+        prisma_1.default.user.update({
+            where: { id: data.authorId },
+            data: { reputationPoints: { increment: isExpertAnswer ? 10 : 2 } }
         })
     ]);
     return comment;
@@ -78,6 +82,12 @@ const likePost = async (postId, userId) => {
     if (existingLike) {
         throw new Error('You have already liked this post');
     }
+    const post = await prisma_1.default.post.findUnique({
+        where: { id: postId }
+    });
+    if (!post) {
+        throw new Error('Post not found');
+    }
     const [like] = await prisma_1.default.$transaction([
         prisma_1.default.postLike.create({
             data: { postId, userId }
@@ -85,6 +95,10 @@ const likePost = async (postId, userId) => {
         prisma_1.default.post.update({
             where: { id: postId },
             data: { likeCount: { increment: 1 } }
+        }),
+        prisma_1.default.user.update({
+            where: { id: post.authorId },
+            data: { reputationPoints: { increment: 5 } }
         })
     ]);
     return like;

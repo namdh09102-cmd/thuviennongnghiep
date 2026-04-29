@@ -16,6 +16,8 @@ const auth_routes_1 = __importDefault(require("./routes/auth.routes"));
 const media_routes_1 = __importDefault(require("./routes/media.routes"));
 const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const category_routes_1 = __importDefault(require("./routes/category.routes"));
+const question_routes_1 = __importDefault(require("./routes/question.routes"));
+const notification_routes_1 = __importDefault(require("./routes/notification.routes"));
 const log_middleware_1 = require("./middleware/log.middleware");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -49,6 +51,8 @@ app.use('/api/v1/auth', auth_routes_1.default);
 app.use('/api/v1/media', media_routes_1.default);
 app.use('/api/v1/users', user_routes_1.default);
 app.use('/api/v1/categories', category_routes_1.default);
+app.use('/api/v1/questions', question_routes_1.default);
+app.use('/api/v1/notifications', notification_routes_1.default);
 // Health check route
 app.get('/api/health', async (req, res) => {
     let dbStatus = 'OK';

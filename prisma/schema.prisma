@@ -25,21 +25,25 @@ enum PostStatus {
 }
 
 model User {
-  id               String     @id @default(uuid())
-  username         String     @unique
-  email            String     @unique
+  id               String         @id @default(uuid())
+  username         String         @unique
+  email            String         @unique
   passwordHash     String
-  role             Role       @default(FARMER)
-  isVerifiedExpert Boolean    @default(false)
-  reputationPoints Int        @default(0)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  role             Role           @default(FARMER)
+  isVerifiedExpert Boolean        @default(false)
+  reputationPoints Int            @default(0)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   posts            Post[]
   comments         Comment[]
   postLikes        PostLike[]
   postSaves        PostSave[]
-  followers        Follow[]   @relation("UserFollowing")
-  following        Follow[]   @relation("UserFollowers")
+  followers        Follow[]       @relation("UserFollowing")
+  following        Follow[]       @relation("UserFollowers")
+  questions        Question[]     @relation("UserQuestions")
+  expertQuestions  Question[]     @relation("ExpertQuestions")
+  answers          Answer[]
+  notifications    Notification[]
 }
 
 model Post {
@@ -47,6 +51,8 @@ model Post {
   slug         String     @unique
   title        String
   content      String     @db.Text
+  excerpt      String?    @db.Text
+  thumbnailUrl String?
   authorId     String
   author       User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
   categoryId   String?
@@ -129,4 +135,50 @@ model Follow {
   following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
+}
+
+model Question {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  userId    String
+  user      User     @relation("UserQuestions", fields: [userId], references: [id], onDelete: Cascade)
+  expertId  String?
+  expert    User?    @relation("ExpertQuestions", fields: [expertId], references: [id], onDelete: SetNull)
+  status    String   @default("OPEN") // OPEN, ANSWERED, CLOSED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  answers   Answer[]
+
+  @@index([userId])
+  @@index([expertId])
+  @@index([status])
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content    String   @db.Text
+  isAccepted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([questionId])
+  @@index([userId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // LIKE, COMMENT, FOLLOW, SYSTEM
+  data      Json
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
 }
