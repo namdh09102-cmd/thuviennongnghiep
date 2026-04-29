@@ -27,32 +27,24 @@
 ### Infrastructure (Production)
 | Service | URL / ID | Mục đích |
 |---|---|---|
-| **Backend (Render)** | https://dashboard.render.com/web/srv-d7o3n5ugvqtc73b7cc3g/events | API Server — Node.js/Express |
-| **Database (Neon)** | https://console.neon.tech/app/projects/rapid-pine-97234480 | PostgreSQL serverless |
+| **Database (MongoDB Atlas)** | Cung cấp chuỗi kết nối MONGODB_URI | Cơ sở dữ liệu chính (Posts, Users, Questions) |
 | **Auth (Google OAuth)** | https://console.cloud.google.com/auth/clients?project=autopostyt-489200 | Google Login |
-| **Supabase** | https://supabase.com/dashboard/project/dfuzqfeltigwjilpvadd | Storage / Realtime (nếu dùng) |
-| **GitHub Tokens** | https://github.com/settings/tokens | Deploy tokens |
-
-### Service IDs
-- Render Service ID: `srv-d7o3n5ugvqtc73b7cc3g`
-- Neon Project ID: `rapid-pine-97234480`
-- Google Cloud Project: `autopostyt-489200`
-- Supabase Project ID: `dfuzqfeltigwjilpvadd`
+| **Hosting FE** | Vercel | Toàn bộ nền tảng Frontend + Next.js API |
 
 ---
 
 ## 🧱 STACK KỸ THUẬT
 
 ```
-Frontend:     Next.js (deployed trên Vercel)
-Backend:      Node.js / Express (deployed trên Render)
-Database:     PostgreSQL (Neon serverless)
-Auth:         Google OAuth 2.0 (Google Cloud)
-Storage:      Supabase Storage (media upload)
-Realtime:     Supabase Realtime (notifications, comments)
-Hosting FE:   Vercel
-Hosting BE:   Render (free tier — cold start ~30s)
+Frontend:     Next.js 14 (Vercel)
+Backend:      Next.js App Router (Internal API)
+Database:     MongoDB Atlas (Mongoose)
+Auth:         Google OAuth 2.0 + NextAuth.js
+Hosting:      Vercel
 ```
+
+> [!NOTE]
+> Toàn bộ kiến trúc Supabase và Neon DB cũ đã được loại bỏ để dọn dẹp hệ thống chuẩn bị cho bản tự lưu trữ (Self-hosting).
 
 ---
 

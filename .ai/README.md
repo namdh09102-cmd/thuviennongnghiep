@@ -85,10 +85,8 @@ Frontend URLs:
 
 Infrastructure:
   ✅ Vercel (frontend) — hoạt động
-  ⚠️ Render (backend) — free tier, cold start 30s
-  ✅ Neon (DB) — hoạt động
+  ✅ MongoDB Atlas (Database) — hoạt động ổn định
   ✅ Google OAuth — configured
-  ✅ Supabase — configured, chưa dùng hết
 ```
 
 ---
@@ -97,7 +95,5 @@ Infrastructure:
 
 - **Frontend:** https://thuviennongnghiepfe.vercel.app
 - **Admin:** https://thuviennongnghiepfe.vercel.app/admin
-- **Render logs:** https://dashboard.render.com/web/srv-d7o3n5ugvqtc73b7cc3g/logs
-- **Neon DB:** https://console.neon.tech/app/projects/rapid-pine-97234480
-- **Supabase:** https://supabase.com/dashboard/project/dfuzqfeltigwjilpvadd
+- **Database MongoDB Atlas:** https://cloud.mongodb.com
 - **Google Cloud:** https://console.cloud.google.com/auth/clients?project=autopostyt-489200

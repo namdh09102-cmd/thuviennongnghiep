@@ -16,9 +16,15 @@ export const createQuestion = async (data: {
     data: {
       title: data.title,
       content: data.content,
-      userId: data.userId,
-      expertId: data.expertId || null,
-      status: 'OPEN'
+      status: 'OPEN',
+      user: {
+        connect: { id: data.userId }
+      },
+      ...(data.expertId ? {
+        expert: {
+          connect: { id: data.expertId }
+        }
+      } : {})
     },
     include: {
       user: { select: { id: true, username: true, role: true } },
@@ -94,8 +100,8 @@ export const createAnswer = async (data: {
 
   const isExpert = user?.role === 'EXPERT';
 
-  const [answer] = await prisma.$transaction([
-    prisma.answer.create({
+  const answer = await prisma.$transaction(async (tx) => {
+    const newAnswer = await tx.answer.create({
       data: {
         questionId: data.questionId,
         userId: data.userId,
@@ -104,18 +110,22 @@ export const createAnswer = async (data: {
       include: {
         user: { select: { id: true, username: true, role: true } }
       }
-    }),
+    });
+
     // Nếu là Expert trả lời, tự động cập nhật status của Question thành ANSWERED
-    prisma.question.update({
+    await tx.question.update({
       where: { id: data.questionId },
       data: { status: isExpert ? 'ANSWERED' : question.status }
-    }),
+    });
+
     // Tăng điểm uy tín
-    prisma.user.update({
+    await tx.user.update({
       where: { id: data.userId },
       data: { reputationPoints: { increment: isExpert ? 15 : 5 } }
-    })
-  ]);
+    });
+
+    return newAnswer;
+  });
 
   return answer;
 };
@@ -141,21 +151,23 @@ export const acceptAnswer = async (questionId: string, answerId: string, userId:
     throw new Error('Answer not found or does not belong to this question');
   }
 
-  await prisma.$transaction([
-    prisma.answer.update({
+  await prisma.$transaction(async (tx) => {
+    await tx.answer.update({
       where: { id: answerId },
       data: { isAccepted: true }
-    }),
-    prisma.question.update({
+    });
+
+    await tx.question.update({
       where: { id: questionId },
       data: { status: 'CLOSED' }
-    }),
+    });
+
     // Thưởng thêm điểm cho người trả lời được chấp nhận
-    prisma.user.update({
+    await tx.user.update({
       where: { id: answer.userId },
       data: { reputationPoints: { increment: 30 } }
-    })
-  ]);
+    });
+  });
 
   return { message: 'Answer accepted successfully' };
 };
